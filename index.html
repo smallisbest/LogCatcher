@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LogCatcher — a tiny, reliable Android logcat viewer</title>
+<meta name="description" content="LogCatcher is a minimalist Android logcat viewer for macOS and Windows. Built because LogRabbit kept crashing and never updated.">
+<link rel="canonical" href="https://smallisbest.github.io/LogCatcher/">
+<meta property="og:title" content="LogCatcher — a tiny, reliable Android logcat viewer">
+<meta property="og:description" content="A minimalist Android logcat viewer for macOS and Windows. Built because LogRabbit kept crashing and never updated.">
+<meta property="og:image" content="https://smallisbest.github.io/LogCatcher/images/logo_1080.png">
+<meta property="og:url" content="https://smallisbest.github.io/LogCatcher/">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#ff6b2b" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#ff8b4e" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" href="images/logo.png">
+<link rel="apple-touch-icon" href="images/logo_1080.png">
+<style>
+  :root {
+    --fg: #1b1c1f;
+    --fg-muted: #565962;
+    --fg-faint: #8a8d95;
+    --bg: #fbfbfc;
+    --bg-elev: #ffffff;
+    --bg-code: #f2f2f4;
+    --rule: #e5e6ea;
+    --accent: #ff6b2b;
+    --accent-bg: #fff1ea;
+    --accent-rule: #ffd6bf;
+    --link: #c14a12;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #e9eaed;
+      --fg-muted: #a9acb4;
+      --fg-faint: #777a82;
+      --bg: #141518;
+      --bg-elev: #1c1d21;
+      --bg-code: #23242a;
+      --rule: #2d2e34;
+      --accent: #ff8b4e;
+      --accent-bg: #2a1a10;
+      --accent-rule: #5a321a;
+      --link: #ffa36e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .15s; }
+  a:hover { border-bottom-color: var(--link); }
+  code, kbd, pre { font-family: var(--mono); }
+  code {
+    background: var(--bg-code); padding: 1px 6px; border-radius: 4px;
+    font-size: .88em;
+  }
+  pre {
+    background: var(--bg-code); padding: 14px 16px; border-radius: 8px;
+    overflow-x: auto; font-size: .88em; line-height: 1.55;
+    border: 1px solid var(--rule);
+  }
+  pre code { background: none; padding: 0; }
+  kbd {
+    background: var(--bg-elev); border: 1px solid var(--rule);
+    border-bottom-width: 2px; border-radius: 4px;
+    padding: 1px 6px; font-size: .85em;
+    box-shadow: 0 1px 0 var(--rule);
+  }
+  h1, h2, h3 { line-height: 1.25; margin: 0 0 .4em; font-weight: 650; letter-spacing: -.01em; }
+  h1 { font-size: 2.4rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.5rem; margin-top: 2.6em; padding-top: 1.6em; border-top: 1px solid var(--rule); }
+  h3 { font-size: 1.1rem; margin-top: 1.8em; color: var(--fg); }
+  p, ul, ol { margin: .6em 0; }
+  ul, ol { padding-left: 1.4em; }
+  li { margin: .25em 0; }
+  hr { border: none; height: 1px; background: var(--rule); margin: 2.4em 0; }
+
+  /* Hero */
+  .hero { display: flex; gap: 28px; align-items: center; margin-bottom: 8px; }
+  .hero img { width: 112px; height: 112px; border-radius: 22px; flex-shrink: 0; }
+  .hero .title { flex: 1; }
+  .hero h1 { margin-bottom: .1em; }
+  .hero .tagline { color: var(--fg-muted); font-size: 1.1rem; margin: 0; }
+  @media (max-width: 560px) {
+    .hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .hero img { width: 88px; height: 88px; border-radius: 18px; }
+    h1 { font-size: 2rem; }
+  }
+
+  /* Accent pull-quote for the backstory */
+  .story {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-rule);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 32px 0;
+    color: var(--fg);
+  }
+  .story p:last-child { margin-bottom: 0; }
+  .story p:first-child { margin-top: 0; }
+
+  /* Platform/download cards */
+  .platforms { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 18px 0; }
+  .platform {
+    background: var(--bg-elev);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .platform h3 { margin-top: 0; font-size: 1rem; }
+  .platform p { margin: .3em 0; color: var(--fg-muted); font-size: .95em; }
+  .platform .sub { color: var(--fg-faint); font-size: .85em; margin-top: .6em; }
+
+  /* Feature grid */
+  .features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin: 14px 0 6px; padding: 0; list-style: none; }
+  .features li { padding-left: 1.3em; position: relative; color: var(--fg); }
+  .features li::before {
+    content: ""; position: absolute; left: 0; top: .55em;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+  }
+  @media (max-width: 560px) {
+    .features { grid-template-columns: 1fr; }
+  }
+
+  /* Syntax table */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .94em; }
+  th, td {
+    text-align: left; padding: 8px 10px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  th { font-weight: 600; color: var(--fg-muted); font-size: .85em; text-transform: uppercase; letter-spacing: .04em; }
+  td code { white-space: nowrap; }
+
+  /* Footer */
+  footer {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    color: var(--fg-faint); font-size: .88em;
+  }
+  footer a { color: var(--fg-muted); }
+
+  /* Subtle bullet list tweak */
+  main ul li::marker { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="hero">
+    <img src="images/logo.png" alt="LogCatcher icon" width="112" height="112">
+    <div class="title">
+      <h1>LogCatcher</h1>
+      <p class="tagline">A tiny, reliable Android logcat viewer for macOS and Windows.</p>
+    </div>
+  </header>
+
+  <section class="story">
+    <p><strong>The short version.</strong> I'm an Android developer. For years I used LogRabbit to follow <code>adb logcat</code> while debugging. It's not a bad app — but it crashed often, and updates stopped coming. After one too many mid-debug crashes cost me a repro I had to chase for an hour, I gave up waiting.</p>
+    <p>LogCatcher is the smallest viewer that does the things I actually need: connect to a device, filter the noise, keep my colors and fonts, remember my filter groups, and <em>stay out of the way</em>. No accounts, no cloud, no telemetry, no surprises.</p>
+  </section>
+
+  <h2>Why it might be worth your time</h2>
+  <ul class="features">
+    <li>Native Cocoa on macOS, native Win32 on Windows — fast launch, low memory.</li>
+    <li>Real-time streaming with smart auto-scroll (sticks to the bottom unless you scroll up).</li>
+    <li>Rich filter syntax: <code>app:</code>, <code>tag:</code>, <code>level:</code>, <code>pid:</code>, <code>tid:</code>, <code>message:</code>, AND / OR, parentheses.</li>
+    <li>Saved filter groups with rename &rarr; Save-As semantics.</li>
+    <li>Per-level text and background colors, fully customizable.</li>
+    <li>Incremental search with <kbd>⌘F</kbd> / <kbd>Ctrl+F</kbd>, &ldquo;N of M&rdquo; status, prev/next.</li>
+    <li>Log-buffer mode switch (&ldquo;From Now&rdquo; vs. &ldquo;All Buffer&rdquo;) with tunable tail lines.</li>
+    <li>Works with any <code>adb</code> on your <code>PATH</code> — no vendoring, no version drift.</li>
+  </ul>
+
+  <h2>Download</h2>
+  <div class="platforms">
+    <div class="platform">
+      <h3>macOS</h3>
+      <p>DMG or PKG — Apple Silicon + Intel. macOS 11 or newer.</p>
+      <p class="sub">Ad-hoc signed (not notarized); first launch needs <code>xattr -cr</code> or the PKG installer, which clears quarantine automatically.</p>
+    </div>
+    <div class="platform">
+      <h3>Windows</h3>
+      <p>Standalone <code>.exe</code>. Windows 10 or newer, x64.</p>
+      <p class="sub">Unsigned; SmartScreen may warn on first launch &mdash; click <em>More info &rarr; Run anyway</em>.</p>
+    </div>
+  </div>
+
+  <h2>Manual</h2>
+
+  <h3>1. Prerequisites</h3>
+  <p>LogCatcher does not bundle the Android platform tools. You need <code>adb</code> from the <a href="https://developer.android.com/tools/releases/platform-tools">Android SDK Platform Tools</a>, either on your <code>PATH</code> or in one of the standard install locations (LogCatcher checks <code>~/Library/Android/sdk/platform-tools</code>, <code>/opt/homebrew/bin</code>, <code>/usr/local/bin</code>, <code>%LOCALAPPDATA%\Android\Sdk\platform-tools</code>, etc.).</p>
+  <p>To verify:</p>
+  <pre><code>adb devices</code></pre>
+  <p>If that lists your device, LogCatcher will too.</p>
+
+  <h3>2. First launch on macOS</h3>
+  <p>Because the app is ad-hoc signed rather than notarized, a fresh machine may show &ldquo;app is damaged and can't be opened.&rdquo; It isn't damaged — macOS just hasn't seen a signature it recognizes. Two options:</p>
+  <ul>
+    <li><strong>DMG</strong>: open Terminal once and run <code>xattr -cr /Applications/LogCatcher.app</code>.</li>
+    <li><strong>PKG</strong>: nothing to do — the installer clears the quarantine flag for you.</li>
+  </ul>
+
+  <h3>3. Connecting a device</h3>
+  <p>Plug in your device (or start an emulator), pick it from the toolbar's device dropdown, and click <strong>Connect</strong>. If the dropdown is empty, click <strong>Refresh</strong>. If exactly one device is connected, LogCatcher picks it automatically; if several, it remembers your last choice.</p>
+
+  <h3>4. Reading logs</h3>
+  <p>Rows are color-coded by level. Auto-scroll sticks to the bottom of the buffer while new lines arrive. Scroll up to pause auto-scroll; scroll back to the bottom to resume it — no toggle needed. Double-click a row to open a detail window with <strong>Copy Message</strong> and <strong>Copy All</strong>.</p>
+
+  <h3>5. Filter syntax</h3>
+  <p>Type into the filter field at the top of the window. Bare words match anywhere in the row. Prefixes scope the match:</p>
+  <table>
+    <thead>
+      <tr><th>Prefix</th><th>Example</th><th>Meaning</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>app:</code></td><td><code>app:com.example</code></td><td>Process package name</td></tr>
+      <tr><td><code>tag:</code></td><td><code>tag:ActivityManager</code></td><td>Log tag</td></tr>
+      <tr><td><code>level:</code></td><td><code>level:E</code></td><td>Level (V, D, I, W, E, F)</td></tr>
+      <tr><td><code>pid:</code></td><td><code>pid:1234</code></td><td>Process ID</td></tr>
+      <tr><td><code>tid:</code></td><td><code>tid:1234</code></td><td>Thread ID</td></tr>
+      <tr><td><code>message:</code></td><td><code>message:ANR</code></td><td>Message body only</td></tr>
+    </tbody>
+  </table>
+  <p>Combine terms with <code>AND</code> / <code>OR</code>. Parentheses group. Examples:</p>
+  <pre><code>level:E AND app:com.example
+tag:ActivityManager AND (level:W OR level:E)
+message:ANR AND NOT app:com.android.systemui</code></pre>
+  <p>Uppercase the operators (<code>AND</code>, <code>OR</code>, <code>NOT</code>); lowercase is treated as a literal word.</p>
+
+  <h3>6. Search within the buffer</h3>
+  <p>Press <kbd>⌘F</kbd> (macOS) or <kbd>Ctrl+F</kbd> (Windows) to open the find field. Type to highlight matches; the status reads <em>&ldquo;N of M&rdquo;</em>. Use <strong>Next</strong> / <strong>Previous</strong> (or <kbd>Enter</kbd> / <kbd>Shift+Enter</kbd>) to jump. <kbd>Esc</kbd> closes the field.</p>
+
+  <h3>7. Saved filter groups</h3>
+  <p>Open <strong>Settings &rarr; Filter Settings…</strong> to manage saved filters. Create a group, name it, and paste in your filter expression. To edit an existing group, change its name or query and click <strong>Save</strong> — the old entry is renamed in place. To fork a group into a new one, change the name and click <strong>Save As</strong>.</p>
+
+  <h3>8. Preferences</h3>
+  <p>Open from the app menu (<strong>LogCatcher &rarr; Settings…</strong> on macOS, <strong>Options &rarr; Preferences</strong> on Windows). The dialog scrolls when needed; the bottom action buttons stay visible.</p>
+  <ul>
+    <li><strong>Filters</strong> — manage saved groups.</li>
+    <li><strong>Log Level Colors</strong> — per-level text and background color. Click a swatch to open the system color picker.</li>
+    <li><strong>Log Font</strong> — monospace font + size for the table.</li>
+    <li><strong>Message Column Width</strong> — initial width (200–5000 px). The column is resizable at runtime too.</li>
+    <li><strong>General</strong>
+      <ul>
+        <li><em>Use icons for toolbar buttons</em> — compact toolbar mode.</li>
+        <li><em>Log buffer mode</em>: <strong>From Now</strong> (recent tail only, faster start) or <strong>All Buffer</strong> (full device buffer).</li>
+        <li><em>&ldquo;From Now&rdquo; recent lines</em> — how many tail lines to pull on connect (1–100 000).</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>9. Keyboard shortcuts</h3>
+  <table>
+    <thead><tr><th>Action</th><th>macOS</th><th>Windows</th></tr></thead>
+    <tbody>
+      <tr><td>Find</td><td><kbd>⌘F</kbd></td><td><kbd>Ctrl+F</kbd></td></tr>
+      <tr><td>Next match</td><td><kbd>Enter</kbd></td><td><kbd>Enter</kbd></td></tr>
+      <tr><td>Previous match</td><td><kbd>Shift+Enter</kbd></td><td><kbd>Shift+Enter</kbd></td></tr>
+      <tr><td>Close find</td><td><kbd>Esc</kbd></td><td><kbd>Esc</kbd></td></tr>
+      <tr><td>Settings</td><td><kbd>⌘,</kbd></td><td>—</td></tr>
+      <tr><td>Quit / Close</td><td><kbd>⌘Q</kbd></td><td><kbd>Alt+F4</kbd></td></tr>
+    </tbody>
+  </table>
+
+  <h3>10. Where things are stored</h3>
+  <table>
+    <thead><tr><th>What</th><th>macOS</th><th>Windows</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Preferences</td>
+        <td><code>~/Library/Preferences/com.deepwinter.logcat.plist</code></td>
+        <td><code>HKCU\Software\com.deepwinter.logcat</code></td>
+      </tr>
+      <tr>
+        <td>Saved filters</td>
+        <td><code>~/Library/Application Support/com.deepwinter.logcat/filters.json</code></td>
+        <td><code>%APPDATA%\com.deepwinter.logcat\filters.json</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>11. Troubleshooting</h3>
+  <ul>
+    <li><strong>No devices listed.</strong> Run <code>adb devices</code> from a terminal. If that fails, <code>adb</code> isn't on your <code>PATH</code> or the device isn't authorized (unlock the phone and accept the USB-debugging prompt).</li>
+    <li><strong>Logs show &ldquo;?&rdquo; in the app column.</strong> The ADB process map is fetched asynchronously after connect. It fills in within a second or two.</li>
+    <li><strong>macOS: &ldquo;app is damaged.&rdquo;</strong> See <a href="#">First launch on macOS</a> above — run <code>xattr -cr</code> or install via the PKG.</li>
+    <li><strong>Windows: SmartScreen warning.</strong> The build is unsigned. Click <em>More info &rarr; Run anyway</em>. Only do this if you trust the source.</li>
+  </ul>
+
+  <footer>
+    <p>LogCatcher is open source. Issues and pull requests welcome on <a href="https://github.com/smallisbest/LogCatcher">GitHub</a>.</p>
+    <p>Copyright © 2026 DeepWinter. All rights reserved.</p>
+  </footer>
+
+</main>
+</body>
+</html>
