@@ -214,7 +214,13 @@
   <p>Plug in your device (or start an emulator), pick it from the toolbar's device dropdown, and click <strong>Connect</strong>. If the dropdown is empty, click <strong>Refresh</strong>. If exactly one device is connected, LogCatcher picks it automatically; if several, it remembers your last choice.</p>
 
   <h3>4. Reading logs</h3>
-  <p>Rows are color-coded by level. Auto-scroll sticks to the bottom of the buffer while new lines arrive. Scroll up to pause auto-scroll; scroll back to the bottom to resume it — no toggle needed. Double-click a row to open a detail window with <strong>Copy Message</strong> and <strong>Copy All</strong>.</p>
+  <p>Rows are color-coded by level. Auto-scroll sticks to the bottom of the buffer while new lines arrive. Scroll up to pause auto-scroll; scroll back to the bottom to resume it — no toggle needed. When the buffer fills its cap and the oldest entries are pruned, the visible rows stay anchored where you left them — the view doesn't &ldquo;jump forward.&rdquo; Double-click a row to open a detail window with <strong>Copy Message</strong> and <strong>Copy All</strong>.</p>
+  <p>The toolbar carries a <strong>Tail / All</strong> toggle right next to Auto-scroll. Click to flip between:</p>
+  <ul>
+    <li><strong>Tail</strong> — fastest start; only the recent tail of the device buffer is pulled on connect (line count configured in Preferences).</li>
+    <li><strong>All</strong> — full device log buffer. Slower initial fill but complete history.</li>
+  </ul>
+  <p>The button label itself shows the current mode (or <kbd>T</kbd> / <kbd>A</kbd> in icon-mode). It mirrors the Preferences <em>Log buffer mode</em> setting both directions — change either, the other follows.</p>
 
   <h3>5. Filter syntax</h3>
   <p>Type into the filter field at the top of the window. Bare words match anywhere in the row. Prefixes scope the match:</p>
@@ -243,23 +249,62 @@ message:ANR AND NOT app:com.android.systemui</code></pre>
   <h3>7. Saved filter groups</h3>
   <p>Open <strong>Settings &rarr; Filter Settings…</strong> to manage saved filters. Create a group, name it, and paste in your filter expression. To edit an existing group, change its name or query and click <strong>Save</strong> — the old entry is renamed in place. To fork a group into a new one, change the name and click <strong>Save As</strong>.</p>
 
-  <h3>8. Preferences</h3>
+  <h3>8. Global Filter (always-applied exclude list)</h3>
+  <p>Some entries are noise you never want to see — kernel <code>pid:0</code> spam, your own analytics tag, etc. Open <strong>Settings &rarr; Global Filter…</strong> for a single, hidden filter group that's applied <em>after</em> any saved filter you have selected: anything matching the Global Filter is dropped from the view, regardless of which saved filter is active.</p>
+  <ul>
+    <li>The default seed when you first open it is <code>pid is 0</code> — kernel-level rows that almost no one wants.</li>
+    <li>The Global Filter group is named <code>~exclusion</code> and intentionally hidden from the main filter list and the Filter Manager so you can't accidentally pick it like a regular filter. The only way to edit it is the Global Filter button.</li>
+    <li>Empty the condition list to disable the Global Filter — an empty group is a no-op.</li>
+    <li>Edits use the same condition editor as any saved filter; the only difference is the name field is locked.</li>
+  </ul>
+
+  <h3>9. Preferences</h3>
   <p>Open from the app menu (<strong>LogCatcher &rarr; Settings…</strong> on macOS, <strong>Options &rarr; Preferences</strong> on Windows). The dialog scrolls when needed; the bottom action buttons stay visible.</p>
   <ul>
-    <li><strong>Filters</strong> — manage saved groups.</li>
+    <li><strong>Filters</strong> — <em>Filter Settings…</em> manages saved groups; <em>Global Filter…</em> opens the always-applied exclude list (see section 8).</li>
     <li><strong>Log Level Colors</strong> — per-level text and background color. Click a swatch to open the system color picker.</li>
     <li><strong>Log Font</strong> — monospace font + size for the table.</li>
     <li><strong>Message Column Width</strong> — initial width (200–5000 px). The column is resizable at runtime too.</li>
     <li><strong>General</strong>
       <ul>
-        <li><em>Use icons for toolbar buttons</em> — compact toolbar mode.</li>
-        <li><em>Log buffer mode</em>: <strong>From Now</strong> (recent tail only, faster start) or <strong>All Buffer</strong> (full device buffer).</li>
-        <li><em>&ldquo;From Now&rdquo; recent lines</em> — how many tail lines to pull on connect (1–100 000).</li>
+        <li><em>Use icons for toolbar buttons</em> — compact toolbar mode (single-letter labels).</li>
+        <li><em>Log buffer mode</em>: <strong>Tail</strong> (recent tail only, faster start) or <strong>All</strong> (full device buffer). Mirrors the toolbar Tail/All toggle.</li>
+        <li><em>Tail recent lines</em> — how many tail lines to pull on connect (1–100 000).</li>
+        <li><em>ADB connection</em> (macOS) — pick how LogCatcher reaches the device. See section 10.</li>
       </ul>
     </li>
   </ul>
 
-  <h3>9. Keyboard shortcuts</h3>
+  <h3>10. ADB connection modes (macOS)</h3>
+  <p>The mac build can reach an Android device three ways. Pick one in <strong>Settings &rarr; ADB connection</strong>; the change takes effect on the next Connect.</p>
+  <table>
+    <thead><tr><th>Mode</th><th>What it does</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>USB (direct)</strong> &nbsp; <em>default</em></td>
+        <td>Talks directly to the device over USB using IOKit + the ADB packet protocol. No <code>adb</code> binary or server needed.</td>
+        <td>Day-to-day use. Bypasses adb-server entirely; needed for the App-Store-friendly path. First Connect on a new computer triggers the &ldquo;Allow USB debugging?&rdquo; prompt on the phone — tap Allow.</td>
+      </tr>
+      <tr>
+        <td>TCP (adb server)</td>
+        <td>Connects to a running <code>adb</code> server on <code>127.0.0.1:5037</code> and speaks the textual server protocol. The server is auto-started if missing.</td>
+        <td>When you want to share the device with Android Studio or other adb-based tools without re-pairing.</td>
+      </tr>
+      <tr>
+        <td>Subprocess (adb binary)</td>
+        <td>Forks the <code>adb</code> binary for every operation (legacy behavior).</td>
+        <td>Diagnostic / fallback if either of the above misbehaves on your setup.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><strong>USB direct caveats</strong>:</p>
+  <ul>
+    <li>If <code>adb-server</code> or Android Studio is holding the device, LogCatcher will seize the interface — those tools may then briefly lose the device. Switch back to TCP/Subprocess to share.</li>
+    <li>Authentication uses your existing <code>~/.android/adbkey</code>. If the device hasn't seen this key before, the phone will prompt for permission — you have ~60 seconds to tap Allow.</li>
+    <li>USB direct is mac-only for now; Windows always uses TCP/Subprocess.</li>
+  </ul>
+
+  <h3>11. Keyboard shortcuts</h3>
   <table>
     <thead><tr><th>Action</th><th>macOS</th><th>Windows</th></tr></thead>
     <tbody>
@@ -272,27 +317,29 @@ message:ANR AND NOT app:com.android.systemui</code></pre>
     </tbody>
   </table>
 
-  <h3>10. Where things are stored</h3>
+  <h3>12. Where things are stored</h3>
   <table>
     <thead><tr><th>What</th><th>macOS</th><th>Windows</th></tr></thead>
     <tbody>
       <tr>
         <td>Preferences</td>
-        <td><code>~/Library/Preferences/com.deepwinter.logcat.plist</code></td>
-        <td><code>HKCU\Software\com.deepwinter.logcat</code></td>
+        <td><code>~/Library/Preferences/com.smallisbest.logcat.plist</code></td>
+        <td><code>HKCU\Software\com.smallisbest.logcat</code></td>
       </tr>
       <tr>
         <td>Saved filters</td>
-        <td><code>~/Library/Application Support/com.deepwinter.logcat/filters.json</code></td>
-        <td><code>%APPDATA%\com.deepwinter.logcat\filters.json</code></td>
+        <td><code>~/Library/Application Support/com.smallisbest.logcat/filters.json</code></td>
+        <td><code>%APPDATA%\com.smallisbest.logcat\filters.json</code></td>
       </tr>
     </tbody>
   </table>
-  <h3>11. Troubleshooting</h3>
+  <h3>13. Troubleshooting</h3>
   <ul>
     <li><strong>No devices listed.</strong> Run <code>adb devices</code> from a terminal. If that fails, <code>adb</code> isn't on your <code>PATH</code> or the device isn't authorized (unlock the phone and accept the USB-debugging prompt).</li>
+    <li><strong>USB direct (mac): &ldquo;USB interface is held exclusively.&rdquo;</strong> Android Studio or another tool has the device. Quit it, or switch to TCP/Subprocess.</li>
+    <li><strong>USB direct: &ldquo;Device rejected our key&rdquo; / prompt never appears.</strong> Run <code>adb kill-server</code> then <code>adb devices</code> once with the phone unlocked, accept the USB-debugging dialog, then retry USB direct.</li>
     <li><strong>Logs show &ldquo;?&rdquo; in the app column.</strong> The ADB process map is fetched asynchronously after connect. It fills in within a second or two.</li>
-    <li><strong>macOS: &ldquo;app is damaged.&rdquo;</strong> See <a href="#">First launch on macOS</a> above — run <code>xattr -cr</code> or install via the PKG.</li>
+    <li><strong>macOS: &ldquo;app is damaged.&rdquo;</strong> See <em>First launch on macOS</em> above — run <code>xattr -cr</code> or install via the PKG.</li>
     <li><strong>Windows: SmartScreen warning.</strong> The build is unsigned. Click <em>More info &rarr; Run anyway</em>. Only do this if you trust the source.</li>
   </ul>
 
