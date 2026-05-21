@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy — LogCatcher</title>
+<meta name="description" content="LogCatcher does not collect, transmit, store, or share any personal data. No accounts, no telemetry, no analytics.">
+<link rel="canonical" href="https://smallisbest.github.io/LogCatcher/privacy.html">
+<meta property="og:title" content="LogCatcher — Privacy Policy">
+<meta property="og:description" content="LogCatcher does not collect, transmit, store, or share any personal data.">
+<meta property="og:url" content="https://smallisbest.github.io/LogCatcher/privacy.html">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#ff6b2b" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#ff8b4e" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" href="images/logo.png">
+<link rel="apple-touch-icon" href="images/logo_1080.png">
+<style>
+  :root {
+    --fg: #1b1c1f;
+    --fg-muted: #565962;
+    --fg-faint: #8a8d95;
+    --bg: #fbfbfc;
+    --bg-elev: #ffffff;
+    --bg-code: #f2f2f4;
+    --rule: #e5e6ea;
+    --accent: #ff6b2b;
+    --accent-bg: #fff1ea;
+    --accent-rule: #ffd6bf;
+    --link: #c14a12;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fg: #e9eaed;
+      --fg-muted: #a9acb4;
+      --fg-faint: #777a82;
+      --bg: #141518;
+      --bg-elev: #1c1d21;
+      --bg-code: #23242a;
+      --rule: #2d2e34;
+      --accent: #ff8b4e;
+      --accent-bg: #2a1a10;
+      --accent-rule: #5a321a;
+      --link: #ffa36e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+  a { color: var(--link); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .15s; }
+  a:hover { border-bottom-color: var(--link); }
+  code { font-family: var(--mono); background: var(--bg-code); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+  h1, h2, h3 { line-height: 1.25; margin: 0 0 .4em; font-weight: 650; letter-spacing: -.01em; }
+  h1 { font-size: 2.4rem; letter-spacing: -.02em; }
+  h2 { font-size: 1.35rem; margin-top: 2.4em; padding-top: 1.4em; border-top: 1px solid var(--rule); }
+  p, ul { margin: .6em 0; }
+  ul { padding-left: 1.4em; }
+  li { margin: .25em 0; }
+  main ul li::marker { color: var(--accent); }
+
+  .hero { display: flex; gap: 28px; align-items: center; margin-bottom: 8px; }
+  .hero img { width: 96px; height: 96px; border-radius: 20px; flex-shrink: 0; }
+  .hero .title { flex: 1; }
+  .hero h1 { margin-bottom: .1em; }
+  .hero .tagline { color: var(--fg-muted); font-size: 1.05rem; margin: 0; }
+  @media (max-width: 560px) {
+    .hero { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .hero img { width: 80px; height: 80px; border-radius: 16px; }
+    h1 { font-size: 2rem; }
+  }
+
+  .summary {
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-rule);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 28px 0 12px;
+  }
+  .summary p { margin: .3em 0; }
+  .summary strong { color: var(--fg); }
+
+  .meta { color: var(--fg-faint); font-size: .9em; margin-top: 4px; }
+
+  footer {
+    margin-top: 64px; padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    color: var(--fg-faint); font-size: .88em;
+  }
+  footer a { color: var(--fg-muted); }
+</style>
+</head>
+<body>
+<main>
+
+  <header class="hero">
+    <img src="images/logo.png" alt="LogCatcher icon" width="96" height="96">
+    <div class="title">
+      <h1>Privacy Policy</h1>
+      <p class="tagline">LogCatcher — Android logcat viewer for macOS and Windows.</p>
+      <p class="meta">Last updated: May 16, 2026</p>
+    </div>
+  </header>
+
+  <section class="summary">
+    <p><strong>Short version.</strong> LogCatcher does not collect, transmit, store, or share any personal data. There is no account, no telemetry, no analytics, no advertising, and no crash reporting. Everything you see in the app stays on your own Mac or PC.</p>
+  </section>
+
+  <h2>1. What LogCatcher does</h2>
+  <p>LogCatcher is a desktop viewer for Android's <code>logcat</code> stream. It reads diagnostic log output from Android devices that you connect to your computer (via USB or a local <code>adb</code> server) and displays it in a filterable, searchable window.</p>
+
+  <h2>2. What LogCatcher does NOT do</h2>
+  <ul>
+    <li>It does not require an account or sign-in.</li>
+    <li>It does not send any data over the network to the developer, to Apple, to Google, or to any third party.</li>
+    <li>It includes no analytics SDKs, no telemetry frameworks, no advertising libraries, and no crash reporting services.</li>
+    <li>It does not read any information from your computer outside of its own preference files (listed below) and the logcat stream from a device you explicitly connect.</li>
+  </ul>
+
+  <h2>3. Information LogCatcher reads</h2>
+  <p>LogCatcher reads two kinds of information, both with your direct involvement:</p>
+  <ul>
+    <li><strong>Logcat output</strong> from an Android device you connect via USB or local <code>adb</code>. This is the device's own diagnostic log — the same data shown by <code>adb logcat</code>. It is shown in the LogCatcher window and never leaves your computer.</li>
+    <li><strong>Local preference files</strong> that LogCatcher itself writes, so your settings persist across launches.</li>
+  </ul>
+
+  <h2>4. Local files LogCatcher writes</h2>
+  <p>These files are stored on your own computer for your own use. They are never uploaded.</p>
+  <ul>
+    <li><strong>macOS</strong>
+      <ul>
+        <li>Preferences: <code>~/Library/Preferences/com.smallisbest.logcat.plist</code></li>
+        <li>Saved filters: <code>~/Library/Application Support/com.smallisbest.logcat/filters.json</code></li>
+      </ul>
+    </li>
+    <li><strong>Windows</strong>
+      <ul>
+        <li>Preferences: <code>HKCU\Software\com.smallisbest.logcat</code></li>
+        <li>Saved filters: <code>%APPDATA%\com.smallisbest.logcat\filters.json</code></li>
+      </ul>
+    </li>
+  </ul>
+  <p>You can delete these at any time; LogCatcher will start fresh on the next launch.</p>
+
+  <h2>5. External tools</h2>
+  <p>LogCatcher uses the Android Platform Tools' <code>adb</code> binary installed on your computer to communicate with connected devices. LogCatcher does not bundle, modify, or transmit <code>adb</code>. Communication with <code>adb</code> stays on your local machine (TCP loopback or a direct USB endpoint).</p>
+
+  <h2>6. Children's privacy</h2>
+  <p>LogCatcher is a developer tool aimed at adults. It does not knowingly collect any personal information from children. Because the app collects no personal information from anyone, there is nothing for children's data to be mixed with.</p>
+
+  <h2>7. Changes to this policy</h2>
+  <p>If this policy changes materially, the &ldquo;Last updated&rdquo; date above will change. Because LogCatcher does not contact any server, you will not be notified automatically — please check this page if you want the current text.</p>
+
+  <h2>8. Contact</h2>
+  <ul>
+    <li>Email: <a href="mailto:outsidus@gmail.com">outsidus@gmail.com</a></li>
+    <li>Website: <a href="https://smallisbest.github.io/LogCatcher/">smallisbest.github.io/LogCatcher</a></li>
+  </ul>
+
+  <footer>
+    <p>Copyright © 2026 DeepWinter. All rights reserved.</p>
+    <p><a href="index.html">← Back to LogCatcher</a></p>
+  </footer>
+
+</main>
+</body>
+</html>
