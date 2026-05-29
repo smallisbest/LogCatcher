@@ -118,6 +118,17 @@
   .platform h3 { margin-top: 0; font-size: 1rem; }
   .platform p { margin: .3em 0; color: var(--fg-muted); font-size: .95em; }
   .platform .sub { color: var(--fg-faint); font-size: .85em; margin-top: .6em; }
+  .platform .dl {
+    display: inline-block; margin: 10px 0 4px; padding: 9px 16px;
+    background: var(--accent); color: #fff; border-radius: 8px;
+    font-weight: 600; font-size: .95em; border-bottom: none;
+  }
+  .platform .dl:hover { background: var(--link); border-bottom: none; }
+  .platform .dl .meta { font-weight: 400; opacity: .85; font-size: .85em; }
+  .platform .dl.disabled {
+    background: var(--bg-code); color: var(--fg-faint);
+    pointer-events: none;
+  }
 
   /* Feature grid */
   .features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; margin: 14px 0 6px; padding: 0; list-style: none; }
@@ -185,13 +196,15 @@
   <div class="platforms">
     <div class="platform">
       <h3>macOS</h3>
-      <p>DMG or PKG — Apple Silicon + Intel. macOS 11 or newer.</p>
-      <p class="sub">Ad-hoc signed (not notarized); first launch needs <code>xattr -cr</code> or the PKG installer, which clears quarantine automatically.</p>
+      <p>Universal &mdash; Apple Silicon + Intel. macOS 11 or newer.</p>
+      <p><a class="dl" href="downloads/LogCatcher-1.0-13.dmg" download>&#x2193; Download DMG <span class="meta">v1.0 (build 13) &middot; 1.4&nbsp;MB</span></a></p>
+      <p class="sub">Ad-hoc signed (not notarized). On first launch, right-click the app &rarr; <em>Open</em>, or run <code>xattr -cr /Applications/LogCatcher.app</code> once. The DMG also ships a README with these steps.</p>
     </div>
     <div class="platform">
       <h3>Windows</h3>
       <p>Standalone <code>.exe</code>. Windows 10 or newer, x64.</p>
-      <p class="sub">Unsigned; SmartScreen may warn on first launch &mdash; click <em>More info &rarr; Run anyway</em>.</p>
+      <p><a class="dl disabled">Build from source</a></p>
+      <p class="sub">No prebuilt download yet &mdash; build with <code>cd win &amp;&amp; make</code> (mingw-w64). Unsigned; SmartScreen may warn &mdash; click <em>More info &rarr; Run anyway</em>.</p>
     </div>
   </div>
 
