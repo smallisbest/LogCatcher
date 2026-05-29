@@ -198,7 +198,7 @@
       <h3>macOS</h3>
       <p>Universal &mdash; Apple Silicon + Intel. macOS 11 or newer.</p>
       <p><a class="dl" href="downloads/LogCatcher-1.0-13.dmg" download>&#x2193; Download DMG <span class="meta">v1.0 (build 13) &middot; 1.4&nbsp;MB</span></a></p>
-      <p class="sub">Ad-hoc signed (not notarized). On first launch, right-click the app &rarr; <em>Open</em>, or run <code>xattr -cr /Applications/LogCatcher.app</code> once. The DMG also ships a README with these steps.</p>
+      <p class="sub">Signed with an Apple Developer ID and notarized by Apple &mdash; just open the DMG and drag LogCatcher to Applications. No Gatekeeper workaround needed.</p>
     </div>
     <div class="platform">
       <h3>Windows</h3>
@@ -217,11 +217,8 @@
   <p>If that lists your device, LogCatcher will too.</p>
 
   <h3>2. First launch on macOS</h3>
-  <p>Because the app is ad-hoc signed rather than notarized, a fresh machine may show &ldquo;app is damaged and can't be opened.&rdquo; It isn't damaged — macOS just hasn't seen a signature it recognizes. Two options:</p>
-  <ul>
-    <li><strong>DMG</strong>: open Terminal once and run <code>xattr -cr /Applications/LogCatcher.app</code>.</li>
-    <li><strong>PKG</strong>: nothing to do — the installer clears the quarantine flag for you.</li>
-  </ul>
+  <p>The downloadable DMG is signed with an Apple Developer ID and notarized by Apple, so it opens normally — just drag LogCatcher to Applications and launch it. No Gatekeeper workaround is needed.</p>
+  <p>If you instead <em>build from source</em> (an ad-hoc signature, not notarized), a fresh machine may show &ldquo;app is damaged and can't be opened.&rdquo; It isn't damaged — macOS just doesn't recognize the signature. Clear it once with <code>xattr -cr /Applications/LogCatcher.app</code>, or Ctrl-click the app &rarr; <em>Open</em>.</p>
 
   <h3>3. Connecting a device</h3>
   <p>Plug in your device (or start an emulator), pick it from the toolbar's device dropdown, and click <strong>Connect</strong>. If the dropdown is empty, click <strong>Refresh</strong>. If exactly one device is connected, LogCatcher picks it automatically; if several, it remembers your last choice.</p>
@@ -352,7 +349,7 @@ message:ANR AND NOT app:com.android.systemui</code></pre>
     <li><strong>USB direct (mac): &ldquo;USB interface is held exclusively.&rdquo;</strong> Android Studio or another tool has the device. Quit it, or switch to TCP/Subprocess.</li>
     <li><strong>USB direct: &ldquo;Device rejected our key&rdquo; / prompt never appears.</strong> Run <code>adb kill-server</code> then <code>adb devices</code> once with the phone unlocked, accept the USB-debugging dialog, then retry USB direct.</li>
     <li><strong>Logs show &ldquo;?&rdquo; in the app column.</strong> The ADB process map is fetched asynchronously after connect. It fills in within a second or two.</li>
-    <li><strong>macOS: &ldquo;app is damaged.&rdquo;</strong> See <em>First launch on macOS</em> above — run <code>xattr -cr</code> or install via the PKG.</li>
+    <li><strong>macOS: &ldquo;app is damaged.&rdquo;</strong> Only happens with a self-built (ad-hoc) binary — the downloadable DMG is notarized. See <em>First launch on macOS</em> above to clear it with <code>xattr -cr</code>.</li>
     <li><strong>Windows: SmartScreen warning.</strong> The build is unsigned. Click <em>More info &rarr; Run anyway</em>. Only do this if you trust the source.</li>
   </ul>
 
