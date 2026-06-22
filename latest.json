@@ -1,6 +1,6 @@
 {
-  "version": "1.0.18",
-  "dmg": "https://smallisbest.github.io/LogCatcher/downloads/LogCatcher-1.0.18.dmg",
+  "version": "1.0.19",
+  "dmg": "https://smallisbest.github.io/LogCatcher/downloads/LogCatcher-1.0.19.dmg",
   "minOS": "11.0",
-  "date": "2026-06-21"
+  "date": "%Y-%m-%d"
 }
